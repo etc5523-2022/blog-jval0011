@@ -23,13 +23,15 @@ library(patchwork)
 air_data <- read.csv("data/week19_airline_safety.csv") 
 ```
 
+Seeing news about flight accidents, airplane crashed, does it make you question airline safety? Does it make you afraid to fly? Regardless of the major flight incidents happened, according to a study by Massachusetts Institute of Technology(MIT), flying on commercial airlines actually has never been safer [@dizikes_2020]. The study has found that the passenger fatalities has been decreasing, even for the long term. 
 
+> “The worldwide risk of being killed had been dropping by a factor of two every decade,” - [barnett_2020] 
 
-
+In this article, we will dive into past airlines performance, analyse and answer the question : "Have airline safety really improved these past decades?" 
 
 ## About the data
 
-The data of this story is sourced from [TidyTuesday](https://github.com/rfordatascience/tidytuesday/tree/master/data/2018/2018-08-07), which has been modified from the original data by [Aviation Safety Network](https://aviation-safety.net/).
+The data for this article is sourced from [TidyTuesday](https://github.com/rfordatascience/tidytuesday/tree/master/data/2018/2018-08-07), which has been modified from the original data by [Aviation Safety Network](https://aviation-safety.net/).
 
 The data contains `r dim(air_data)[1]` observations and `r dim(air_data)[2]` variables. 
 
@@ -208,6 +210,8 @@ p4 <- avg_fat %>%
 p4
 ```
 ## References
+
+**The following are the OS system and R-packages used in this report:**
 
 ```{r}
 library(sessioninfo)
