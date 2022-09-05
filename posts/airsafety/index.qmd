@@ -1,0 +1,216 @@
+---
+title: "Have Airlines Safety Improve Over Time ✈️?"
+author: "Josephine Valensia"
+date: "2022-09-06"
+categories: [Article]
+image: "image.jpg"
+bibliography: references.bib  
+execute: 
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+library(tidyverse)
+library(kableExtra)
+library(scales)
+library(ggrepel)
+library(patchwork)
+```
+
+```{r read}
+air_data <- read.csv("data/week19_airline_safety.csv") 
+```
+
+
+
+
+
+## About the data
+
+The data of this story is sourced from [TidyTuesday](https://github.com/rfordatascience/tidytuesday/tree/master/data/2018/2018-08-07), which has been modified from the original data by [Aviation Safety Network](https://aviation-safety.net/).
+
+The data contains `r dim(air_data)[1]` observations and `r dim(air_data)[2]` variables. 
+
+```{r variable}
+tibble(
+  "Variable" = colnames(air_data),
+  "Class" = c("integer", "character", "double",
+              "character","character","integer"),
+  "Description" = c("Number of observations",
+                    "Airline (asterisk indicates that regional subsidiaries are included)",
+                    "Available seat kilometers flown every week",
+                    "Range of year (1985-1999 & 2000-2014)",
+                    "Types of events happened : incidents, fatal accidents, fatalities",
+                    "Total number of event that happened"
+                   )) %>%
+  kable() %>%
+  kable_styling(full_width = F, 
+                bootstrap_options = c("striped", "hover", "condensed"))
+  
+```
+
+## Analysis
+
+```{r}
+air <- air_data%>%
+  select(-X) %>%
+  mutate(airline = str_replace(airline,"\\*",""),
+         year_range = factor(year_range, levels=c("85_99", "00_14")),
+         n_events = as.numeric(n_events),
+         type_of_event = str_replace(type_of_event, "\\_", " ")) %>%
+  mutate(type_of_event = factor(type_of_event, 
+                                levels = c("incidents", "fatal accidents", "fatalities")))
+```
+
+
+```{r}
+#| label: tbl-diff
+#| tbl-cap: Average number of incidents, fatal accidents and fatalities had decreased, comparing both range of years.  
+
+air %>%
+  pivot_wider(names_from = year_range,
+              values_from = n_events) %>%
+  group_by(type_of_event) %>%
+  summarise(avg85_99 = mean(`85_99`, na.rm = TRUE),
+            avg00_14 = mean(`00_14`, na.rm = TRUE)) %>%
+  mutate(diff = (avg00_14 - avg85_99)/avg85_99 * 100) %>%
+  kable(col.names = c("Type of event", "1985-1999", "2000-2014", "Difference(%)"), align = "lrrr",
+        caption = "Average number of incidents",
+        digits = 3) %>%
+  kable_styling(full_width = F, 
+                bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+From the @tbl-diff below we can see that on average airlines has become more safe as the number of incidents, fatal accidents and fatalities had decreased. 
+
+```{r}
+air_wide <- air %>%
+  pivot_wider(names_from = c(year_range, type_of_event),
+              values_from = n_events) %>%
+  rename("incidents1" = "85_99_incidents",
+         "fatal_accidents1" = "85_99_fatal accidents",
+         "fatalities1" = "85_99_fatalities",
+         "incidents2" = "00_14_incidents",
+         "fatal_accidents2" = "00_14_fatal accidents",
+         "fatalities2" = "00_14_fatalities"
+        ) %>%
+  mutate(tot_inc = incidents1 + incidents2,
+         tot_fac = fatal_accidents1 + fatal_accidents2,
+         tot_fat = fatalities1 + fatalities2)
+```
+
+
+```{r}
+#| label: fig-inc
+#| fig-cap: Top 10 airlines with the highest number of incidents in 1985-99 and 2000-14
+#| fig-width: 10
+#| fig-height: 4
+
+my_colors <- c("#B5EAD7", "#C7CEEA", "#FF9AA2", "#C1E3FE")
+common_air <- c("Delta / Northwest", "American", 
+                     "United / Continental", "US Airways / America West")
+names(my_colors) = common_air
+
+
+p1 <- air_wide %>%
+  top_n(10, incidents1) %>%
+  ggplot(aes(x = incidents1,
+            y = reorder(airline, incidents1, max))) +
+  geom_col() +
+  geom_col(data = ~filter(.x, airline %in% common_air),
+             fill = my_colors) +
+  labs(y = "",
+       x = "Number of Incidents",
+       title = "1985 - 1999") +
+  geom_text(aes(label = incidents1),
+            hjust = 0, nudge_x = -9, color = "black", size = 5)
+
+
+p2 <-air_wide %>%
+  top_n(10, incidents2) %>%
+  ggplot(aes(x = incidents2,
+            y = fct_reorder(airline, incidents2, max))) +
+  geom_col() +
+  geom_col(data = ~filter(.x, airline %in% common_air),
+             fill = my_colors) +
+  labs(y = "",
+       x = "Number of Incidents",
+       title = "2000 - 2014") +
+  geom_text(aes(label = incidents2),
+            hjust = 0, nudge_x = -3, color = "black", size = 5)
+
+p1 + p2
+```
+
+From the @fig-inc we can see
+
+
+
+
+
+
+
+
+```{r}
+avg_fat <- air %>%
+  pivot_wider(names_from = year_range,
+              values_from = n_events) %>%
+  filter(type_of_event == "fatalities") %>%
+  mutate(fat_8599 = `85_99` / avail_seat_km_per_week,
+         fat_0014 = `00_14` / avail_seat_km_per_week)
+
+avg_fat %>%
+  summarise(avg_fat8599 = mean(`fat_8599`, na.rm = TRUE) * 10000000,
+            avg_fat0014 = mean(`fat_0014`, na.rm = TRUE) * 10000000) %>%
+  mutate(diff = (avg_fat0014-avg_fat8599) / avg_fat8599 * 100) %>%
+  kable(col.names = c("1985-1999", "2000-2014", "Difference (%)"), align = "rrr",
+        caption = "Average number of fatalities in 10 million seats",
+        digits = 3) %>%
+  kable_styling(full_width = F, 
+                bootstrap_options = c("striped", "hover", "condensed")
+                ,position = "right")
+  
+```
+
+```{r}
+#| label: fatalities
+#| fig-cap: Number of fatalities in 10 million seats
+
+p4 <- avg_fat %>%
+  ggplot(aes(x = fat_0014,
+             y = fat_8599,
+             label = airline)) +
+  geom_point(size = 2) +
+  geom_point(data = ~filter(.x, airline %in% c("Kenya Airways", "Malaysia Airlines", "Gulf Air")),
+             color = "#d580ff") +
+  geom_point(data = ~filter(.x, airline %in% c("Avianca","Pakistan International", "China Airlines")),
+             color = "#00CC00") +
+  scale_x_continuous(labels = label_number(scale = 10000000, accuracy = 0.1)) +
+  scale_y_continuous(labels = label_number(scale = 10000000, accuracy = 0.1)) +
+  geom_label_repel(data = subset(avg_fat, airline %in% c("Kenya Airways","Malaysia Airlines", 
+                                                        "Gulf Air")),
+                  size = 4,
+                  box.padding   = 0.35, 
+                  point.padding = 0.5,
+                  color = "#d580ff") +
+  geom_label_repel(data = subset(avg_fat, airline %in% c("Avianca", 
+                                                        "Pakistan International", 
+                                                        "China Airlines")),
+                  size = 4,
+                  box.padding   = 0.35, 
+                  point.padding = 0.5,
+                  color = "#00CC00") +
+  labs(x = "2000 - 2014",
+       y = "1985 - 1999")
+
+p4
+```
+## References
+
+```{r}
+library(sessioninfo)
+sessioninfo::session_info()
+```
+

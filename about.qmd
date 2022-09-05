@@ -1,8 +1,10 @@
 ---
 title: "About"
-image: profile.jpg
+image: profile.jpeg
 about:
-  template: jolla
+  template: trestles
+  image-width: 10em
+  image-shape: round
   links:
     - icon: github
       text: Github
@@ -10,4 +12,13 @@ about:
 
 ---
 
-This is a blog template for the ETC5523 Communicating with Data assessment at Monash University.
+## Halo! 
+My name is Josephine Valensia! I am a first year business analytics student at Monash University. 
+
+
+## About "EXPLORING DATA WITH JO"
+This is a blog for the ETC5523 Communicating with Data assessment at Monash University. This blog contains my projects exploring various kind of fascinating data. 
+
+
+
+

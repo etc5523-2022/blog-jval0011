@@ -1,12 +1,16 @@
 ---
-title: "Welcome To My Blog Template"
-author: "Emi Tanaka"
-date: "2022-07-18"
-categories: [news]
+title: "Welcome To My Blog"
+author: "Josephine Valensia"
+date: "2022-09-05"
+categories: [Article]
 ---
 
-This is the first post in a Quarto blog. Welcome!
 
-![](thumbnail.jpg)
+Hello! Welcome to my first Quarto blog post. In this blog, I would like to share my analysis and findings on interesting and intriguing topics. Hope you enjoy it!
+
+![](image.gif)
+
+
+
 
 
