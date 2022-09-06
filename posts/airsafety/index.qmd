@@ -17,23 +17,24 @@ library(kableExtra)
 library(scales)
 library(ggrepel)
 library(patchwork)
+library(plotly)
 ```
 
 ```{r read}
 air_data <- read.csv("data/week19_airline_safety.csv") 
 ```
 
-Seeing news about flight accidents, airplane crashed, does it make you question airline safety? Does it make you afraid to fly? Regardless of the major flight incidents happened, according to a study by Massachusetts Institute of Technology(MIT), flying on commercial airlines actually has never been safer [@dizikes_2020]. The study has found that the passenger fatalities has been decreasing, even for the long term. 
+Seeing news about flight accidents, airplane crashed, does it make you question airline safety? Does it make you afraid to fly? Regardless of the major flight incidents happened, according to a study by Massachusetts Institute of Technology(MIT), flying on commercial airlines actually has never been safer [@dizikes_2020]. The study has found that the passenger fatalities has been decreasing, even for the long term.
 
-> “The worldwide risk of being killed had been dropping by a factor of two every decade,” - [barnett_2020] 
+> "The worldwide risk of being killed had been dropping by a factor of two every decade," - \[barnett_2020\]
 
-In this article, we will dive into past airlines performance, analyse and answer the question : "Have airline safety really improved these past decades?" 
+In this article, we will dive into past airlines performance, analyse and answer the question : "Have airline safety really improved these past decades?"
 
 ## About the data
 
 The data for this article is sourced from [TidyTuesday](https://github.com/rfordatascience/tidytuesday/tree/master/data/2018/2018-08-07), which has been modified from the original data by [Aviation Safety Network](https://aviation-safety.net/).
 
-The data contains `r dim(air_data)[1]` observations and `r dim(air_data)[2]` variables. 
+The data contains `r dim(air_data)[1]` observations and `r dim(air_data)[2]` variables. These variables are:
 
 ```{r variable}
 tibble(
@@ -55,6 +56,8 @@ tibble(
 
 ## Analysis
 
+Let's first look at the overall trend between the range of year 1985-1999 and 2000-2014 for each type of the events.
+
 ```{r}
 air <- air_data%>%
   select(-X) %>%
@@ -65,7 +68,6 @@ air <- air_data%>%
   mutate(type_of_event = factor(type_of_event, 
                                 levels = c("incidents", "fatal accidents", "fatalities")))
 ```
-
 
 ```{r}
 #| label: tbl-diff
@@ -79,13 +81,12 @@ air %>%
             avg00_14 = mean(`00_14`, na.rm = TRUE)) %>%
   mutate(diff = (avg00_14 - avg85_99)/avg85_99 * 100) %>%
   kable(col.names = c("Type of event", "1985-1999", "2000-2014", "Difference(%)"), align = "lrrr",
-        caption = "Average number of incidents",
         digits = 3) %>%
   kable_styling(full_width = F, 
                 bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-From the @tbl-diff below we can see that on average airlines has become more safe as the number of incidents, fatal accidents and fatalities had decreased. 
+From the @tbl-diff below we can see that on average airlines has become more safe as the number of incidents, fatal accidents and fatalities had decreased.
 
 ```{r}
 air_wide <- air %>%
@@ -102,7 +103,6 @@ air_wide <- air %>%
          tot_fac = fatal_accidents1 + fatal_accidents2,
          tot_fat = fatalities1 + fatalities2)
 ```
-
 
 ```{r}
 #| label: fig-inc
@@ -146,14 +146,47 @@ p2 <-air_wide %>%
 p1 + p2
 ```
 
-From the @fig-inc we can see
+The @fig-inc shows the Airlines with the most incidents in both range of years. Surprisingly, there are 4 airlines from the US that stays in the top 10, with Delta Airlines having the same number of incidents in both period. However, looking in overall number of incidents, the numbers did decreased with the highest of 24 incidents, which has dropped almost 70%.
+
+```{r}
 
 
+df1 <- air %>%
+  filter(type_of_event == "fatal accidents",
+         year_range == "85_99") %>%
+  select(airline, year_range, n_events) %>%
+  arrange(-n_events) %>%
+  head (10) %>%
+  mutate(ranks = as.factor(row_number()))
 
+df2 <- air %>%
+  filter(type_of_event == "fatal accidents",
+         year_range == "00_14") %>%
+  select(airline, year_range, n_events) %>%
+  arrange(-n_events) %>%
+  head (10) %>%
+  mutate(ranks = as.factor(row_number()))
 
+df  <- df1 %>% 
+  bind_rows(df2) 
 
+```
 
+```{r}
+#| label: fig-fatal
+#| fig-cap: Top 10 airlines with the highest number of fatal accidents in 1985-99 and 2000-14
 
+p4<- df %>%
+  ggplot(aes(x = ranks,
+             y = n_events,
+             fill = year_range,
+             text = airline)) +
+  geom_col(position = position_dodge()) +
+  labs(x = "Top 10 Airlines",
+       y = "Number of Fatal Accidents")
+
+ggplotly(p4, tooltip = c("x","y", "text"))
+```
 
 ```{r}
 avg_fat <- air %>%
@@ -180,7 +213,7 @@ avg_fat %>%
 #| label: fatalities
 #| fig-cap: Number of fatalities in 10 million seats
 
-p4 <- avg_fat %>%
+p5 <- avg_fat %>%
   ggplot(aes(x = fat_0014,
              y = fat_8599,
              label = airline)) +
@@ -207,8 +240,9 @@ p4 <- avg_fat %>%
   labs(x = "2000 - 2014",
        y = "1985 - 1999")
 
-p4
+p5
 ```
+
 ## References
 
 **The following are the OS system and R-packages used in this report:**
@@ -217,4 +251,3 @@ p4
 library(sessioninfo)
 sessioninfo::session_info()
 ```
-
