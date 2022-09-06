@@ -1,0 +1,4 @@
+- source: project
+  quarto-pub:
+    - id: 6e6e4d59-ebc7-4b19-8443-24817b95d8f5
+      url: 'https://quartopub.com/sites/jval/exploring-data-with-jo'

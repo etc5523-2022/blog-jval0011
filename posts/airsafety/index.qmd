@@ -283,11 +283,11 @@ p5
 
 Moreover, most airlines with a high rate of fatalities in 1985-1999, such as Avianca, Pakistan International and China Airlines, were unlikely to have a high rate of fatalities in the next decades as shown in @fig-fatalities. On the other side, even though airlines that had a low fatality rate in 1985-1999 did not perform well and resulted in a higher rate of fatalities in 2000-2014, like Kenya Airways, Malaysia Airlines and Gulf Air, the fatality rate of the other airlines was shown to be lower.
 
-## So, Have airline safety really improved these past decades?
+## So, has airline safety really improved these past decades?
 
 Based on our analysis of the number of incidents, fatal accidents and rate of fatalities, comparing data from two period of year, 1985-1999 and 2000-2014, we can say that airline safety had improved. Most of the airlines also showed improvement of their safety performance resulting in a huge drop of incidents and fatalities. Moreover, in the latest report from International Air Transport Association [@iata] also finds that "long-term accident trends confirm that aviation is getting safer". 
 
-Therefore, do not worry to fly as AIRLINE SAFETY REALLY HAS IMPROVED and is getting safer.
+Therefore, do not worry to fly as **AIRLINE SAFETY REALLY HAS IMPROVED** and is getting safer.
 
 ## The following are the OS system and R-packages used for this article:
 
