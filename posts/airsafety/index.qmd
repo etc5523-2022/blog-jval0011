@@ -1,5 +1,5 @@
 ---
-title: "Have Airlines Safety Improve Over Time ✈️?"
+title: "Has Airlines Safety Improved Over Time ✈️?"
 author: "Josephine Valensia"
 date: "2022-09-06"
 categories: [Article]
@@ -25,9 +25,9 @@ library(plotly)
 air_data <- read.csv("data/week19_airline_safety.csv") 
 ```
 
-Seeing news about flight accidents, airplane crashed, does it make you question airline safety? Does it make you afraid to fly? Regardless of the major flight incidents happened, according to a study by Massachusetts Institute of Technology(MIT), flying on commercial airlines actually has never been safer [@dizikes_2020]. The study has found that the passenger fatalities has been decreasing, even for the long term. 
+Seeing the news about flight accidents and aeroplane crashes makes you question airline safety? Does it make you afraid to fly? Regardless of the major flight incidents that happened, according to a study by the Massachusetts Institute of Technology(MIT), flying on commercial airlines actually has never been safer [@dizikes_2020]. The study has found that passenger fatalities have been decreasing, even in the long term. 
 
-In this article, we will dive into past airlines performance, analyse the data and answer the question: "Have airline safety really improved these past decades?"
+In this article, we will dive into past airlines' performance, analyse the data and answer the question: "Have airline safety really improved these past decades?"
 
 ## About the data
 
@@ -56,7 +56,7 @@ tibble(
 
 ## Analysis
 
-Let's first look at the overall trend between the range of year 1985-1999 and 2000-2014 for each type of the events.
+Let's first look at the overall trend between the range of 1985-1999 and 2000-2014 for each type of event.
 
 ```{r}
 air <- air_data%>%
@@ -87,18 +87,18 @@ air %>%
   column_spec(4, bold = T, background = "#D3D3D3")
 ```
 
-From the @tbl-diff above we can see that airlines did become more safe as the number of incidents, fatal accidents and fatalities had decreased. On average the number of occurrence in the period 2000-14 has decline roughly half compared to 1985-1999. This finding is also supported by [@barnett_2020] study which claim that the accident risk indeed declined by a factor of two every decade. 
+From the @tbl-diff above, we can see that airlines did become safer as the number of incidents, fatal accidents, and fatalities decreased. On average the number of occurrences in the period 2000-14 declined roughly half compared to 1985-1999. This finding is also supported by [@barnett_2020] study, which claims that the accident risk indeed reduced by a factor of two every decade. 
 
 ::: {.column-margin}
 > "The worldwide risk of being killed had been dropping by a factor of two every decade." - [@barnett_2020]. 
 
 :::
 
-Now we know that the overall trend is decreasing, we will take a closer look to each type of the events.
+Now that we have the overall image of the trend, we will take a closer look at each type of the events.
 
 #### Incidents
 
-To compare the number of incidents during both period, I will take the top 10 airlines with the highest number of incidents occurred in 1985-1999 and 2000-2014. 
+To compare the number of incidents during both periods, I will take the top 10 airlines with the highest number of incidents that occurred in 1985-1999 and 2000-2014. 
 
 ```{r}
 air_wide <- air %>%
@@ -161,11 +161,11 @@ p2 <-air_wide %>%
 p1 + p2
 ```
 
-The @fig-inc shows the airlines with the most incidents in both range of years. Despite of 4 airlines from the US that stays in the top 10, with Delta Airlines having the same number of incidents in both period, looking in the overall number of incidents, the numbers did decreased with the highest of 24 incidents in 2000-2014, which has dropped almost 70% from 1985-1999.
+The @fig-inc shows the airlines with the most incidents in both ranges of years. Despite 4 airlines from the US staying in the top 10 and Delta Airlines having the same number of incidents in both periods, the incidents decreased with the highest of 24 incidents in 2000-2014, dropping almost 70% from 1985-1999.
 
 #### Fatal Accidents
 
-Within those incidents, there are few numbers that are fatal causing fatalities. Similarly, we will compare the 10 airlines with the highest number of fatal accidents in 1985-1999 and 2000-2014. 
+Within those incidents, a few numbers are fatal, causing fatalities. Similarly, we will compare the ten airlines with the highest number of fatal accidents in 1985-1999 and 2000-2014. 
 
 ```{r}
 df1 <- air %>%
@@ -208,11 +208,9 @@ p4<- df %>%
 ggplotly(p4, tooltip = c("x","y", "text"))
 ```
 
-Clearly, we can see from @fig-fatal a significant difference especially in the top 5 rank. On average in 1985-1999 there are 3.5 times more fatal accidents occurred than in 2000-2014. We can contrast the difference looking at the first rank, Aeroflot with 14 fatal accidents in 1985-1999 compared to American Airlines with just 3 fatal accidents in 2000-2014. This indicates a big improvement in airline safety preventing fatal accidents over the years. 
+We can see from @fig-fatal a significant difference, especially in the top 5 ranks. On average, in 1985-1999, 3.5 times more fatal accidents occurred than in 2000-2014. We can contrast the difference by looking at the first rank, Aeroflot, with 14 fatal accidents in 1985-1999, compared to American Airlines, with just three fatal accidents in 2000-2014. This indicates a significant improvement in airline safety, preventing fatal accidents over the years. 
 
 #### Fatalities
-
-
 
 ```{r}
 avg_fat <- air %>%
@@ -223,7 +221,7 @@ avg_fat <- air %>%
          fat_0014 = `00_14` / avail_seat_km_per_week)
 ```
 
-Fatal accidents caused fatalities, risking the crews and the passengers live. Along with the declining incident and fatal accident number, we will analyse did the fatality rate also decreases. 
+Fatal accidents cause fatalities, risking the crews' and the passengers' lives. So along with the declining incident and fatal accident numbers, we will analyse whether the fatality rate also decreased. 
 
 <div style= "float:right;position: relative; padding-left: 80px;">
 ```{r}
@@ -245,7 +243,7 @@ avg_fat %>%
 
 The rate of fatalities is calculated following the method used by @silver_2014. Dividing the number of fatalities by the number of available seat kilometers(ASK) flown every week, with the assumption that the airlines have the same ASK over the years. 
 
-@tbl-fatalities indicates that, on average, the rate of fatalities has dropped by half with potential risk of 0.6 in 10 million by 2000-2014. It means that only 1 people over 17 million seats offered by the airlines potentially have the risk to be in a fatal accident.
+@tbl-fatalities indicates that, on average, the rate of fatalities has dropped by half with potential risk of 0.6 in 10 million by 2000-2014. It means that only **1 people over 17 million** seats offered by the airlines potentially have the risk to be in a fatal accident.
 
 ```{r}
 #| label: fig-fatalities
@@ -283,13 +281,13 @@ p5 <- avg_fat %>%
 p5
 ```
 
-Moreover, most airlines with high rate of fatalities in 1985-1999, such as Avianca, Pakistan International and China Airlines were unlikely to have high rate of fatalities in the next decades as shown in @fig-fatalities. On the other side, despite the fact that airlines that had low fatality rate in 1985-1999 did not perform well and resulted in a higher rate of fatalities in 2000-2014, like Kenya Airways, Malaysia Airlines and Gulf Air, the fatality rate of the other airlines was shown to be lower.
+Moreover, most airlines with a high rate of fatalities in 1985-1999, such as Avianca, Pakistan International and China Airlines, were unlikely to have a high rate of fatalities in the next decades as shown in @fig-fatalities. On the other side, even though airlines that had a low fatality rate in 1985-1999 did not perform well and resulted in a higher rate of fatalities in 2000-2014, like Kenya Airways, Malaysia Airlines and Gulf Air, the fatality rate of the other airlines was shown to be lower.
 
 ## So, Have airline safety really improved these past decades?
 
-Based on our analysis of the number of incidents, fatal accidents and rate of fatalities, comparing data from two period of year, 1985-1999 and 2000-2014, we can say that airline safety had improved. Each of the airlines also showed improvement of their safety performance resulting in a huge drop of incidents and fatalities. Moreoever, in the latest report from International Air Transport Association [@iata] also finds that "long-term accident trends confirm that aviation is getting safer". 
+Based on our analysis of the number of incidents, fatal accidents and rate of fatalities, comparing data from two period of year, 1985-1999 and 2000-2014, we can say that airline safety had improved. Most of the airlines also showed improvement of their safety performance resulting in a huge drop of incidents and fatalities. Moreover, in the latest report from International Air Transport Association [@iata] also finds that "long-term accident trends confirm that aviation is getting safer". 
 
-Therefore, do not worry to fly as AIRLINE SAFETY REALLY HAVE IMPROVED and is getting safer.
+Therefore, do not worry to fly as AIRLINE SAFETY REALLY HAS IMPROVED and is getting safer.
 
 ## The following are the OS system and R-packages used for this article:
 
