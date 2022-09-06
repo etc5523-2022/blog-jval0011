@@ -5,6 +5,7 @@ date: "2022-09-06"
 categories: [Article]
 image: "image.jpg"
 bibliography: references.bib  
+css: "style.css"
 execute: 
   echo: false
   warning: false
@@ -24,11 +25,9 @@ library(plotly)
 air_data <- read.csv("data/week19_airline_safety.csv") 
 ```
 
-Seeing news about flight accidents, airplane crashed, does it make you question airline safety? Does it make you afraid to fly? Regardless of the major flight incidents happened, according to a study by Massachusetts Institute of Technology(MIT), flying on commercial airlines actually has never been safer [@dizikes_2020]. The study has found that the passenger fatalities has been decreasing, even for the long term.
+Seeing news about flight accidents, airplane crashed, does it make you question airline safety? Does it make you afraid to fly? Regardless of the major flight incidents happened, according to a study by Massachusetts Institute of Technology(MIT), flying on commercial airlines actually has never been safer [@dizikes_2020]. The study has found that the passenger fatalities has been decreasing, even for the long term. 
 
-> "The worldwide risk of being killed had been dropping by a factor of two every decade," - \[barnett_2020\]
-
-In this article, we will dive into past airlines performance, analyse and answer the question : "Have airline safety really improved these past decades?"
+In this article, we will dive into past airlines performance, analyse the data and answer the question: "Have airline safety really improved these past decades?"
 
 ## About the data
 
@@ -53,6 +52,7 @@ tibble(
                 bootstrap_options = c("striped", "hover", "condensed"))
   
 ```
+
 
 ## Analysis
 
@@ -83,10 +83,22 @@ air %>%
   kable(col.names = c("Type of event", "1985-1999", "2000-2014", "Difference(%)"), align = "lrrr",
         digits = 3) %>%
   kable_styling(full_width = F, 
-                bootstrap_options = c("striped", "hover", "condensed"))
+                bootstrap_options = c("striped", "hover", "condensed")) %>%
+  column_spec(4, bold = T, background = "#D3D3D3")
 ```
 
-From the @tbl-diff below we can see that on average airlines has become more safe as the number of incidents, fatal accidents and fatalities had decreased.
+From the @tbl-diff above we can see that airlines did become more safe as the number of incidents, fatal accidents and fatalities had decreased. On average the number of occurrence in the period 2000-14 has decline roughly half compared to 1985-1999. This finding is also supported by [@barnett_2020] study which claim that the accident risk indeed declined by a factor of two every decade. 
+
+::: {.column-margin}
+> "The worldwide risk of being killed had been dropping by a factor of two every decade." - [@barnett_2020]. 
+
+:::
+
+Now we know that the overall trend is decreasing, we will take a closer look to each type of the events.
+
+#### Incidents
+
+To compare the number of incidents during both period, I will take the top 10 airlines with the highest number of incidents occurred in 1985-1999 and 2000-2014. 
 
 ```{r}
 air_wide <- air %>%
@@ -107,8 +119,9 @@ air_wide <- air %>%
 ```{r}
 #| label: fig-inc
 #| fig-cap: Top 10 airlines with the highest number of incidents in 1985-99 and 2000-14
-#| fig-width: 10
-#| fig-height: 4
+#| fig-width: 12
+#| fig-height: 6
+
 
 my_colors <- c("#B5EAD7", "#C7CEEA", "#FF9AA2", "#C1E3FE")
 common_air <- c("Delta / Northwest", "American", 
@@ -120,37 +133,41 @@ p1 <- air_wide %>%
   top_n(10, incidents1) %>%
   ggplot(aes(x = incidents1,
             y = reorder(airline, incidents1, max))) +
-  geom_col() +
+  geom_col(fill = "#D3D3D3") +
   geom_col(data = ~filter(.x, airline %in% common_air),
              fill = my_colors) +
   labs(y = "",
        x = "Number of Incidents",
        title = "1985 - 1999") +
   geom_text(aes(label = incidents1),
-            hjust = 0, nudge_x = -9, color = "black", size = 5)
+            hjust = 0, nudge_x = -9, color = "black", size = 5) +
+  theme_minimal()
 
 
 p2 <-air_wide %>%
   top_n(10, incidents2) %>%
   ggplot(aes(x = incidents2,
             y = fct_reorder(airline, incidents2, max))) +
-  geom_col() +
+  geom_col(fill = "#D3D3D3") +
   geom_col(data = ~filter(.x, airline %in% common_air),
              fill = my_colors) +
   labs(y = "",
        x = "Number of Incidents",
        title = "2000 - 2014") +
   geom_text(aes(label = incidents2),
-            hjust = 0, nudge_x = -3, color = "black", size = 5)
+            hjust = 0, nudge_x = -3, color = "black", size = 5) +
+  theme_minimal()
 
 p1 + p2
 ```
 
-The @fig-inc shows the Airlines with the most incidents in both range of years. Surprisingly, there are 4 airlines from the US that stays in the top 10, with Delta Airlines having the same number of incidents in both period. However, looking in overall number of incidents, the numbers did decreased with the highest of 24 incidents, which has dropped almost 70%.
+The @fig-inc shows the airlines with the most incidents in both range of years. Despite of 4 airlines from the US that stays in the top 10, with Delta Airlines having the same number of incidents in both period, looking in the overall number of incidents, the numbers did decreased with the highest of 24 incidents in 2000-2014, which has dropped almost 70% from 1985-1999.
+
+#### Fatal Accidents
+
+Within those incidents, there are few numbers that are fatal causing fatalities. Similarly, we will compare the 10 airlines with the highest number of fatal accidents in 1985-1999 and 2000-2014. 
 
 ```{r}
-
-
 df1 <- air %>%
   filter(type_of_event == "fatal accidents",
          year_range == "85_99") %>%
@@ -169,12 +186,12 @@ df2 <- air %>%
 
 df  <- df1 %>% 
   bind_rows(df2) 
-
 ```
 
 ```{r}
 #| label: fig-fatal
 #| fig-cap: Top 10 airlines with the highest number of fatal accidents in 1985-99 and 2000-14
+#| fig-align: center
 
 p4<- df %>%
   ggplot(aes(x = ranks,
@@ -182,11 +199,20 @@ p4<- df %>%
              fill = year_range,
              text = airline)) +
   geom_col(position = position_dodge()) +
-  labs(x = "Top 10 Airlines",
-       y = "Number of Fatal Accidents")
+  labs(x = "Top 10 Airlines Rank",
+       y = "Number of Fatal Accidents",
+       fill="Year Range") +
+  scale_fill_brewer(palette = "Accent") +
+  theme_minimal()
 
 ggplotly(p4, tooltip = c("x","y", "text"))
 ```
+
+Clearly, we can see from @fig-fatal a significant difference especially in the top 5 rank. On average in 1985-1999 there are 3.5 times more fatal accidents occurred than in 2000-2014. We can contrast the difference looking at the first rank, Aeroflot with 14 fatal accidents in 1985-1999 compared to American Airlines with just 3 fatal accidents in 2000-2014. This indicates a big improvement in airline safety preventing fatal accidents over the years. 
+
+#### Fatalities
+
+
 
 ```{r}
 avg_fat <- air %>%
@@ -195,6 +221,14 @@ avg_fat <- air %>%
   filter(type_of_event == "fatalities") %>%
   mutate(fat_8599 = `85_99` / avail_seat_km_per_week,
          fat_0014 = `00_14` / avail_seat_km_per_week)
+```
+
+Fatal accidents caused fatalities, risking the crews and the passengers live. Along with the declining incident and fatal accident number, we will analyse did the fatality rate also decreases. 
+
+<div style= "float:right;position: relative; padding-left: 80px;">
+```{r}
+#| label: tbl-fatalities
+#| tbl-cap: Average number of fatalities in 10 million seats
 
 avg_fat %>%
   summarise(avg_fat8599 = mean(`fat_8599`, na.rm = TRUE) * 10000000,
@@ -204,14 +238,19 @@ avg_fat %>%
         caption = "Average number of fatalities in 10 million seats",
         digits = 3) %>%
   kable_styling(full_width = F, 
-                bootstrap_options = c("striped", "hover", "condensed")
-                ,position = "right")
-  
+                bootstrap_options = c("striped", "hover", "condensed")) %>%
+  column_spec(3, bold = T, background = "#D3D3D3")
 ```
+</div>
+
+The rate of fatalities is calculated following the method used by @silver_2014. Dividing the number of fatalities by the number of available seat kilometers(ASK) flown every week, with the assumption that the airlines have the same ASK over the years. 
+
+@tbl-fatalities indicates that, on average, the rate of fatalities has dropped by half with potential risk of 0.6 in 10 million by 2000-2014. It means that only 1 people over 17 million seats offered by the airlines potentially have the risk to be in a fatal accident.
 
 ```{r}
-#| label: fatalities
+#| label: fig-fatalities
 #| fig-cap: Number of fatalities in 10 million seats
+#| fig-align: center
 
 p5 <- avg_fat %>%
   ggplot(aes(x = fat_0014,
@@ -238,14 +277,21 @@ p5 <- avg_fat %>%
                   point.padding = 0.5,
                   color = "#00CC00") +
   labs(x = "2000 - 2014",
-       y = "1985 - 1999")
+       y = "1985 - 1999") +
+  theme_minimal()
 
 p5
 ```
 
-## References
+Moreover, most airlines with high rate of fatalities in 1985-1999, such as Avianca, Pakistan International and China Airlines were unlikely to have high rate of fatalities in the next decades as shown in @fig-fatalities. On the other side, despite the fact that airlines that had low fatality rate in 1985-1999 did not perform well and resulted in a higher rate of fatalities in 2000-2014, like Kenya Airways, Malaysia Airlines and Gulf Air, the fatality rate of the other airlines was shown to be lower.
 
-**The following are the OS system and R-packages used in this report:**
+## So, Have airline safety really improved these past decades?
+
+Based on our analysis of the number of incidents, fatal accidents and rate of fatalities, comparing data from two period of year, 1985-1999 and 2000-2014, we can say that airline safety had improved. Each of the airlines also showed improvement of their safety performance resulting in a huge drop of incidents and fatalities. Moreoever, in the latest report from International Air Transport Association [@iata] also finds that "long-term accident trends confirm that aviation is getting safer". 
+
+Therefore, do not worry to fly as AIRLINE SAFETY REALLY HAVE IMPROVED and is getting safer.
+
+## The following are the OS system and R-packages used for this article:
 
 ```{r}
 library(sessioninfo)
